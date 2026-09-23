@@ -1,0 +1,1 @@
+export const env={"PUBLIC_BACKEND_URL":"https://vox-box.wyvern-altair.ts.net","PUBLIC_WS_URL":"wss://vox-box.wyvern-altair.ts.net","PUBLIC_PEER_HOST":"vox-box.wyvern-altair.ts.net","PUBLIC_PEER_PORT":"8443","PUBLIC_PEER_PATH":"/peerjs"}
