@@ -1,1 +1,59 @@
-if(!self.define){let e,l={};const i=(i,u)=>(i=new URL(i+".js",u).href,l[i]||new Promise(l=>{if("document"in self){const e=document.createElement("script");e.src=i,e.onload=l,document.head.appendChild(e)}else e=i,importScripts(i),l()}).then(()=>{let e=l[i];if(!e)throw new Error(`Module ${i} didn’t register its module`);return e}));self.define=(u,s)=>{const n=e||("document"in self?document.currentScript.src:"")||location.href;if(l[n])return;let r={};const a=e=>i(e,n),o={module:{uri:n},exports:r,require:a};l[n]=Promise.all(u.map(e=>o[e]||a(e))).then(e=>(s(...e),r))}}define(["./workbox-8c29f6e4"],function(e){"use strict";self.skipWaiting(),e.clientsClaim(),e.precacheAndRoute([{url:"sw.js",revision:"dc4716997a039dfb3d78f880f12270a5"},{url:"registerSW.js",revision:"402b66900e731ca748771b6fc5e7a068"},{url:"pwa-512x512.png",revision:"ae3b575eca635c5f90fce0bf0a1a132d"},{url:"pwa-192x192.png",revision:"6fa41d117118fc51e78f0a3f3529c206"},{url:"favicon.ico",revision:"46f38418581a0cc3fabe6d3267b725b1"},{url:"apple-touch-icon.png",revision:"cc29b9cabcba8b87a02f75c362e0e1b4"},{url:"_app/immutable/nodes/9.BYLahmdl.js",revision:null},{url:"_app/immutable/nodes/8.BiuFOHmb.js",revision:null},{url:"_app/immutable/nodes/7.DEfI7vP5.js",revision:null},{url:"_app/immutable/nodes/6.Bbvlgah-.js",revision:null},{url:"_app/immutable/nodes/5.WFt1bKU4.js",revision:null},{url:"_app/immutable/nodes/4.CG2JLG2Z.js",revision:null},{url:"_app/immutable/nodes/3.CLr6zOFJ.js",revision:null},{url:"_app/immutable/nodes/2.DUxPd3m8.js",revision:null},{url:"_app/immutable/nodes/10.B_ndS4nq.js",revision:null},{url:"_app/immutable/nodes/1.C3b2COjr.js",revision:null},{url:"_app/immutable/nodes/0.vUHJvAFd.js",revision:null},{url:"_app/immutable/entry/start.DvY2Olj1.js",revision:null},{url:"_app/immutable/entry/app.CELD-WnD.js",revision:null},{url:"_app/immutable/chunks/vIG8N0wM.js",revision:null},{url:"_app/immutable/chunks/ZiBvalq6.js",revision:null},{url:"_app/immutable/chunks/Dpc0S7DJ.js",revision:null},{url:"_app/immutable/chunks/DnPuPuxf.js",revision:null},{url:"_app/immutable/chunks/Dkzy7b4L.js",revision:null},{url:"_app/immutable/chunks/DbC5n48g.js",revision:null},{url:"_app/immutable/chunks/DOpErhef.js",revision:null},{url:"_app/immutable/chunks/DLSzdGFQ.js",revision:null},{url:"_app/immutable/chunks/D9Bd_7MQ.js",revision:null},{url:"_app/immutable/chunks/D51-oo_3.js",revision:null},{url:"_app/immutable/chunks/CzJIjOKm.js",revision:null},{url:"_app/immutable/chunks/CzIDiWey.js",revision:null},{url:"_app/immutable/chunks/CtMfGJVQ.js",revision:null},{url:"_app/immutable/chunks/CsvxiaCA.js",revision:null},{url:"_app/immutable/chunks/CstdtsXu.js",revision:null},{url:"_app/immutable/chunks/CrWyDXyE.js",revision:null},{url:"_app/immutable/chunks/Cge3MfhC.js",revision:null},{url:"_app/immutable/chunks/CXW-vfOy.js",revision:null},{url:"_app/immutable/chunks/CT8fBiwy.js",revision:null},{url:"_app/immutable/chunks/CIRu2Wdo.js",revision:null},{url:"_app/immutable/chunks/BmJp1CdT.js",revision:null},{url:"_app/immutable/chunks/B_fdtdmv.js",revision:null},{url:"_app/immutable/chunks/B4jeEs0_.js",revision:null},{url:"_app/immutable/chunks/B4VlAf9E.js",revision:null},{url:"_app/immutable/assets/logo-white.z_kTx7fx.png",revision:null},{url:"_app/immutable/assets/logo-black.BMcshKPr.png",revision:null},{url:"_app/immutable/assets/0.DmiMq5b4.css",revision:null},{url:"/",revision:"674619af12585bacfaecdec8972e2686"},{url:"signup",revision:"21bef506beb707982eca6a06caf02e6f"},{url:"profile",revision:"21bef506beb707982eca6a06caf02e6f"},{url:"people",revision:"21bef506beb707982eca6a06caf02e6f"},{url:"messages",revision:"21bef506beb707982eca6a06caf02e6f"},{url:"login-success",revision:"21bef506beb707982eca6a06caf02e6f"},{url:"feed",revision:"21bef506beb707982eca6a06caf02e6f"},{url:"manifest.webmanifest",revision:"5091864dffd58b7c79e417f79ecdbe1e"}],{}),e.cleanupOutdatedCaches(),e.registerRoute(new e.NavigationRoute(e.createHandlerBoundToURL("/")))});
+self.addEventListener('install', () => {
+	self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+	event.waitUntil(self.clients.claim());
+});
+
+const appUrl = (path) => new URL(path.replace(/^\//, ''), self.registration.scope).href;
+
+self.addEventListener('push', (event) => {
+	if (!event.data) return;
+
+	let payload = {
+		title: 'Nevka',
+		body: 'You have a new message',
+		url: 'messages',
+		tag: 'message'
+	};
+
+	try {
+		payload = { ...payload, ...(event.data.json() ?? {}) };
+	} catch {
+		const text = event.data.text();
+		if (text) {
+			payload = { ...payload, body: text };
+		}
+	}
+
+	event.waitUntil(
+		self.registration.showNotification(payload.title, {
+			body: payload.body,
+			icon: appUrl('pwa-192x192.png'),
+			badge: appUrl('pwa-192x192.png'),
+			tag: payload.tag,
+			data: { url: appUrl(payload.url) }
+		})
+	);
+});
+
+self.addEventListener('notificationclick', (event) => {
+	event.notification.close();
+	const url = event.notification.data?.url || appUrl('messages');
+
+	event.waitUntil(
+		self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+			for (const client of clients) {
+				if ('focus' in client) {
+					client.navigate(url);
+					return client.focus();
+				}
+			}
+			if (self.clients.openWindow) {
+				return self.clients.openWindow(url);
+			}
+			return undefined;
+		})
+	);
+});
